@@ -1,0 +1,41 @@
+---
+- name: Deploy URL Shortener
+  hosts: app_servers
+  become: yes
+
+  vars:
+    db_host: "url-shortener-db.c54cao8uch8l.ap-south-1.rds.amazonaws.com"
+    db_password: "ChangeMeBeforeRealUse123!"
+    redis_host: "url-shortener-cache.pvv3vy.0001.aps1.cache.amazonaws.com"
+    image: "divsh12345/url-shortener-api:v4"
+
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Ensure Docker is running
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull image
+      docker_image:
+        name: "{{ image }}"
+        source: pull
+
+    - name: Run container
+      docker_container:
+        name: url-shortener
+        image: "{{ image }}"
+        state: started
+        restart_policy: always
+        ports:
+          - "8000:8000"
+        env:
+          DB_HOST: "{{ db_host }}"
+          DB_PASSWORD: "{{ db_password }}"
+          REDIS_HOST: "{{ redis_host }}"
