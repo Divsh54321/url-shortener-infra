@@ -1,0 +1,15 @@
+
+# Terraform working directory and downloaded providers
+.terraform/
+
+# Terraform state
+*.tfstate
+*.tfstate.*
+crash.log
+
+# Sensitive local files
+*.tfvars
+*.tfvars.json
+*.pem
+*.key
+.env
